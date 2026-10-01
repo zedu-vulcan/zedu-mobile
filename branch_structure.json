@@ -1,0 +1,33 @@
+{
+  "default_branch": "dev",
+  "branches": [
+    "central-staging",
+    "chore/bump-reviewer-notify-pin",
+    "dev",
+    "feat/77-signup-password-hint",
+    "fix/56-thread-preview-entities",
+    "fix/75-reset-password-min-length",
+    "fix/76-forgot-password-copy",
+    "origin"
+  ],
+  "parent": {
+    "central-staging": "dev",
+    "chore/bump-reviewer-notify-pin": "dev",
+    "dev": null,
+    "feat/77-signup-password-hint": "dev",
+    "fix/56-thread-preview-entities": "dev",
+    "fix/75-reset-password-min-length": "dev",
+    "fix/76-forgot-password-copy": "dev",
+    "origin": "dev"
+  },
+  "order": [
+    "dev",
+    "central-staging",
+    "chore/bump-reviewer-notify-pin",
+    "feat/77-signup-password-hint",
+    "fix/56-thread-preview-entities",
+    "fix/75-reset-password-min-length",
+    "fix/76-forgot-password-copy",
+    "origin"
+  ]
+}
