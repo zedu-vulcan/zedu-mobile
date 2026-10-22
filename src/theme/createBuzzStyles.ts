@@ -2168,15 +2168,29 @@ export function createBuzzGreenRoomComponentStyles(colors: ThemeColors) {
   });
 }
 
-export function createWelcomeScreenStyles(colors: ThemeColors) {
+export function createWelcomeScreenStyles(
+  colors: ThemeColors,
+  screenWidth: number,
+) {
+  const isTablet = screenWidth >= 600;
+
   return StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: colors.surface,
       paddingHorizontal: 25,
+      ...(isTablet
+        ? { alignItems: 'center' as const, justifyContent: 'center' as const }
+        : {}),
+    },
+    content: {
+      width: '100%',
+      ...(isTablet
+        ? { height: '100%' as const, maxHeight: 840, maxWidth: 480 }
+        : { flex: 1 }),
     },
     topSection: {
-      flex: 2,
+      flex: isTablet ? 1 : 2,
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -2218,11 +2232,28 @@ export function createWelcomeScreenStyles(colors: ThemeColors) {
     },
     linkText: {
       color: colors.primary,
+      ...(isTablet ? { fontSize: 14, lineHeight: 20 } : {}),
     },
     bottomSection: {
       flex: 1,
-      justifyContent: 'flex-end',
-      paddingBottom: 20,
+      justifyContent: isTablet ? 'center' : 'flex-end',
+      paddingBottom: isTablet ? 0 : 20,
+      ...(isTablet
+        ? { width: '100%' as const, maxWidth: 420, alignSelf: 'center' as const }
+        : {}),
+    },
+    tabletButton: {
+      height: 56,
+      borderRadius: 12,
+    },
+    tabletPrimaryButton: {
+      height: 56,
+      borderRadius: 12,
+      marginBottom: 14,
+    },
+    tabletButtonText: {
+      fontSize: 16,
+      lineHeight: 22,
     },
     primaryBtn: {
       backgroundColor: colors.primary,
