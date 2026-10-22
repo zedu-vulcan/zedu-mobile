@@ -3,6 +3,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ViewStyle,
+  TextStyle,
   ActivityIndicator,
 } from 'react-native';
 import { AppText } from './text';
@@ -15,6 +16,7 @@ interface AppButtonProps {
   variant?: 'primary' | 'secondary' | 'danger';
   loading?: boolean;
   style?: ViewStyle;
+  textStyle?: TextStyle;
   disabled?: boolean;
 }
 
@@ -24,6 +26,7 @@ export const AppButton: React.FC<AppButtonProps> = ({
   variant = 'primary',
   loading = false,
   style,
+  textStyle,
   disabled = false,
 }) => {
   const { colors } = useTheme();
@@ -91,13 +94,14 @@ export const AppButton: React.FC<AppButtonProps> = ({
       <AppText
         variant="semiBold"
         size={16}
-        style={
+        style={[
           isPrimary
             ? styles.primaryText
             : isDanger
             ? styles.dangerText
-            : styles.secondaryText
-        }
+            : styles.secondaryText,
+          textStyle,
+        ]}
       >
         {title}
       </AppText>
