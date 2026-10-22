@@ -21,6 +21,16 @@ apiClient.interceptors.request.use(
   },
 );
 
+type UnauthorizedListener = () => void;
+let unauthorizedListener: UnauthorizedListener | null = null;
+
+/** Lets the app sign the user out when a request comes back 401. */
+export const setUnauthorizedListener = (
+  listener: UnauthorizedListener | null,
+) => {
+  unauthorizedListener = listener;
+};
+
 export const request = async <T = any>(
   config: AxiosRequestConfig,
 ): Promise<{ data: T | null; error: string | null }> => {
@@ -36,7 +46,7 @@ export const request = async <T = any>(
       error.response?.data?.status_code === 401
     ) {
       await clearAllData();
-      // Logic for logout or redirect goes here
+      unauthorizedListener?.();
     }
 
     return { data: null, error: message };

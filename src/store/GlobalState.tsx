@@ -1,6 +1,13 @@
-import { createContext, useReducer, ReactNode, Dispatch } from 'react';
+import {
+  createContext,
+  useEffect,
+  useReducer,
+  ReactNode,
+  Dispatch,
+} from 'react';
+import { setUnauthorizedListener } from '@/utils/requests';
 import reducers, { AppState } from './Reducers';
-import { Action } from './types';
+import { Action, ACTIONS } from './types';
 
 // Define the context shape
 interface ContextProps {
@@ -87,6 +94,20 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const [state, dispatch] = useReducer(reducers, initialState);
+
+  // A 401 has already cleared saved auth; clear the in-memory session too so
+  // the navigator returns to Sign in instead of staying on signed-in screens.
+  useEffect(() => {
+    setUnauthorizedListener(() => {
+      dispatch({ type: ACTIONS.TOKEN, payload: null });
+      dispatch({ type: ACTIONS.USER, payload: null });
+      dispatch({ type: ACTIONS.ORG_DATA, payload: null });
+      dispatch({ type: ACTIONS.USER_CHANNELS, payload: [] });
+      dispatch({ type: ACTIONS.DMS, payload: [] });
+      dispatch({ type: ACTIONS.DMS_CHAT, payload: { data: [], page: 1 } });
+    });
+    return () => setUnauthorizedListener(null);
+  }, []);
 
   return (
     <DataContext.Provider value={{ state, dispatch }}>
