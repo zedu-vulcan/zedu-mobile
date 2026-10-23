@@ -88,6 +88,7 @@ const SecurityScreen = ({ navigation }: any) => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const { state } = useDataContext();
   const { user } = state;
@@ -100,7 +101,10 @@ const SecurityScreen = ({ navigation }: any) => {
       `/users/${user?.user_id}/login-audit?page=${pageNum}&limit=${limit}`,
     );
 
-    if (!error && data?.data) {
+    if (error) {
+      setLoadError(error);
+    } else if (data?.data) {
+      setLoadError(null);
       if (isRefresh) {
         setSessions(data.data);
       } else {
@@ -188,7 +192,21 @@ const SecurityScreen = ({ navigation }: any) => {
             Active Sessions
           </AppText>
 
-          {sessions.length === 0 ? (
+          {sessions.length === 0 && loadError ? (
+            <View style={styles.emptyState}>
+              <MaterialCommunityIcons
+                name="alert-circle-outline"
+                size={48}
+                color={colors.iconMuted}
+              />
+              <AppText style={styles.emptyText}>
+                Couldn't load your sessions. {loadError}
+              </AppText>
+              <TouchableOpacity onPress={handleRefresh}>
+                <AppText variant="bold">Try again</AppText>
+              </TouchableOpacity>
+            </View>
+          ) : sessions.length === 0 ? (
             <View style={styles.emptyState}>
               <MaterialCommunityIcons
                 name="shield-check-outline"
