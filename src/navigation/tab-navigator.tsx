@@ -105,7 +105,6 @@ const TabNavigator = ({
         tabBadgeWide: {
           minWidth: normalize(32),
           paddingHorizontal: normalize(5),
-          right: normalize(-16),
         },
         tabBadgeText: {
           color: colors.white,
