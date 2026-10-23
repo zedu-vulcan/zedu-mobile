@@ -17,6 +17,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useDataContext } from '@/store/useDataContext';
 import { ACTIONS } from '@/store/types';
 import { clearAllData } from '@/utils/helper';
+import { PostRequest } from '@/utils/requests';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme/ThemeProvider';
 
@@ -151,8 +152,8 @@ const DeleteAccountScreen: React.FC = ({ navigation }: any) => {
   const [selectedReason, setSelectedReason] = useState<string | null>(null);
   const [otherReason, setOtherReason] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [isDeleting, _setIsDeleting] = useState(false);
-  const { dispatch } = useDataContext();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { state, dispatch } = useDataContext();
   const [_loading, setLoading] = useState(false);
 
   const isFormValid = useMemo(() => {
@@ -184,6 +185,26 @@ const DeleteAccountScreen: React.FC = ({ navigation }: any) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Send the deletion request first and only sign out once it is accepted.
+  const handleDeletePermanently = async () => {
+    const user = state?.user;
+    const details = selectedReason === 'Other' ? otherReason.trim() : '';
+    setIsDeleting(true);
+    const { error } = await PostRequest('/account/delete-account', {
+      fullname: user?.fullname || user?.full_name || user?.username || '',
+      email: user?.email || '',
+      reason: selectedReason === 'Other' ? details : selectedReason,
+      additional_info: details,
+    });
+    setIsDeleting(false);
+    if (error) {
+      dispatch({ type: ACTIONS.ERROR, payload: error });
+      return;
+    }
+    setShowConfirmModal(false);
+    await logout();
   };
 
   return (
@@ -316,7 +337,7 @@ const DeleteAccountScreen: React.FC = ({ navigation }: any) => {
             <View style={styles.modalActions}>
               <AppButton
                 title="Delete Permanently"
-                onPress={logout}
+                onPress={handleDeletePermanently}
                 loading={isDeleting}
                 style={styles.finalDeleteBtn}
               />
