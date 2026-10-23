@@ -278,7 +278,6 @@ const DeleteAccountScreen: React.FC = ({ navigation }: any) => {
             <AppButton
               title="Go Back"
               onPress={() => navigation.goBack()}
-              disabled={!isFormValid}
               variant="secondary"
               style={{ marginTop: normalize(12) }}
             />
