@@ -291,10 +291,10 @@ const TabNavigator = ({
             route.name === 'Chats'
               ? chatsTabUnreadTotal
               : route.name === 'Channels'
-              ? channelTabUnreadTotal
-              : route.name === 'Threads'
-              ? unseenThreadCount
-              : 0;
+                ? channelTabUnreadTotal
+                : route.name === 'Threads'
+                  ? unseenThreadCount
+                  : 0;
 
           const useBadgedTabIcon =
             route.name === 'Chats' ||
