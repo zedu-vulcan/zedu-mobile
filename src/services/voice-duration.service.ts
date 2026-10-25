@@ -1,4 +1,3 @@
-/* eslint-disable no-bitwise */
 import RNFS from 'react-native-fs';
 import { ensureCachedVoiceAudio, VoiceMedia } from '@/utils/voice-message';
 

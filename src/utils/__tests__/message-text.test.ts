@@ -12,7 +12,7 @@ describe('getChatListPreview (chats list preview, issue #128)', () => {
         file_name: 'voice_1696592400000.m4a',
         file_type: 'm4a',
         mime_type: 'video/mp4', // mobile voice notes carry a video mime
-        file_link: 'https://zedu.chat/voice.m4a',
+        file_link: 'https://example.com/voice.m4a',
       },
     ],
   });
@@ -26,7 +26,7 @@ describe('getChatListPreview (chats list preview, issue #128)', () => {
         file_name: 'video_1696592400000.mp4',
         file_type: 'mp4',
         mime_type: 'video/mp4',
-        file_link: 'https://zedu.chat/video.mp4',
+        file_link: 'https://example.com/video.mp4',
       },
     ],
   });
@@ -40,7 +40,7 @@ describe('getChatListPreview (chats list preview, issue #128)', () => {
         file_name: 'photo.png',
         file_type: 'png',
         mime_type: 'image/png',
-        file_link: 'https://zedu.chat/photo.png',
+        file_link: 'https://example.com/photo.png',
       },
     ],
   });
