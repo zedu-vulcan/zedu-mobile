@@ -309,6 +309,10 @@ const ChatDetailScreen = ({ navigation }: any) => {
       isOptimistic: true,
     };
 
+    const previousMessage = content;
+    const previousMentions = mentionsMetadata;
+    const previousMedia = medias.length > 0 ? medias : state.media;
+
     dispatch({
       type: ACTIONS.DMS_CHAT,
       payload: { newMessage: optimisticMessage },
@@ -324,7 +328,39 @@ const ChatDetailScreen = ({ navigation }: any) => {
       mentions: mentionsMetadata,
     };
 
-    await PostRequest(`/dms/channels/${channel_id}/threads`, payload);
+    try {
+      const { error } = await PostRequest(
+        `/dms/channels/${channel_id}/threads`,
+        payload,
+      );
+
+      if (error) {
+        dispatch({
+          type: ACTIONS.DELETE_DM_MESSAGE,
+          payload: { threadId: tempId },
+        });
+        setMessage(previousMessage);
+        setMentionsMetadata(previousMentions);
+        if (previousMedia.length > 0) {
+          dispatch({ type: ACTIONS.MEDIA, payload: previousMedia });
+        }
+        ShowNotify('Error', error || 'Failed to send message');
+        return;
+      }
+    } catch (err: any) {
+      dispatch({
+        type: ACTIONS.DELETE_DM_MESSAGE,
+        payload: { threadId: tempId },
+      });
+      setMessage(previousMessage);
+      setMentionsMetadata(previousMentions);
+      if (previousMedia.length > 0) {
+        dispatch({ type: ACTIONS.MEDIA, payload: previousMedia });
+      }
+      ShowNotify('Error', err?.message || 'Failed to send message');
+      return;
+    }
+
     dispatch({ type: ACTIONS.CALLBACK, payload: !state.callback });
     clearUploads();
   };
