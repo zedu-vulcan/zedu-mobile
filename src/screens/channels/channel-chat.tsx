@@ -47,6 +47,7 @@ import { ShowNotify } from '@/components/ui/toast';
 import buzzService from '@/services/buzz.service';
 import ChatBackground from '@/components/layout/chat/chat-background';
 import { useMessageDraft } from '@/hooks/useMessageDraft';
+import { useBrowseChannels } from '@/services/channels/browse-channel';
 
 const ChannelChatScreen = ({ navigation, route }: any) => {
   const { colors } = useTheme();
@@ -65,6 +66,7 @@ const ChannelChatScreen = ({ navigation, route }: any) => {
   const [mentionState, setMentionState] = useState<{
     query: string;
     pos: number;
+    trigger: string;
   } | null>(null);
   const [mentionsMetadata, setMentionsMetadata] = useState<any[]>([]);
   const [isEditorVisible, setIsEditorVisible] = useState(false);
@@ -88,11 +90,20 @@ const ChannelChatScreen = ({ navigation, route }: any) => {
   const [callLoading, setCallLoading] = useState(false);
   const [returnLoading, setReturnLoading] = useState(true);
 
+  const { channels } = useBrowseChannels('', '');
   const mentionUserSheetRef = useRef<MentionUserBottomSheetRef>(null);
+
   const { fromNotification, channel_id: routeChannelId } = route?.params || {};
 
+  // DEBUG: See exactly what the route is passing
+  console.log('ROUTE CHANNEL ID PASSED:', routeChannelId);
+
+  // Force the route ID to be used first
   const channel_id =
-    routeChannelId || channel?.channels_id || channel?.channel_id;
+    routeChannelId ||
+    state?.channel?.channels_id ||
+    channel?.channels_id ||
+    channel?.channel_id;
   const { loadMore, isFetchingMore } = UseChannelChat({
     channel_id: channel_id as string,
   });
@@ -280,15 +291,18 @@ const ChannelChatScreen = ({ navigation, route }: any) => {
     [channelDetails?.participants, channel?.participants],
   );
 
-  // Open mention picker when @ is typed
-  const handleMentionTrigger = (query: string, pos: number) => {
-    setMentionState({ query, pos });
+  const handleMentionTrigger = (
+    query: string,
+    pos: number,
+    trigger: string = '@',
+  ) => {
+    setMentionState({ query, pos, trigger });
   };
 
   const handleMentionSelect = (selectedUser: any) => {
     if (!mentionState) return;
 
-    const { pos, query } = mentionState;
+    const { pos, query, trigger } = mentionState;
     const mentionStart = pos - query.length - 1;
 
     const textBefore = message.substring(0, mentionStart);
@@ -365,6 +379,16 @@ const ChannelChatScreen = ({ navigation, route }: any) => {
     const tempId = uuid.v4() as string;
     // Construct web-compatible HTML payload
     let formattedContent = content;
+    formattedContent = formattedContent.replace(
+      /#([a-zA-Z0-9_\-]+)/g,
+      (match, channelName) => {
+        return buildMentionHtmlTag({
+          id: channelName,
+          label: channelName,
+          type: 'channel',
+        });
+      },
+    );
     mentionsMetadata.forEach(m => {
       const mentionTag = buildMentionHtmlTag(m);
       formattedContent = formattedContent.replace(`@${m.label}`, mentionTag);
@@ -682,7 +706,6 @@ const ChannelChatScreen = ({ navigation, route }: any) => {
                 onSelect={handleMentionSelect}
               />
             )}
-
             <ChatInput
               message={message}
               setMessage={setMessage}
