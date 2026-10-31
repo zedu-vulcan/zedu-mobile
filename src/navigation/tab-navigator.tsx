@@ -1,26 +1,26 @@
-import React, { useCallback, useMemo } from "react";
-import { Image, Platform, StyleSheet, View } from "react-native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { normalize } from "@/utils/normalize";
-import { navigationBarBottomPadding } from "@/utils/status-bar-inset";
-import HomeScreen from "@/screens/home";
-import ChannelHome from "@/screens/channels";
-import SettingsHome from "@/screens/settings";
-import { useDataContext } from "@/store/useDataContext";
-import { GetRequest } from "@/utils/requests";
-import { useFocusEffect } from "@react-navigation/native";
-import { ACTIONS } from "@/store/types";
-import { BuzzTabStack } from "@/navigation/stacks/buzz/buzz-tab-stack";
-import MentionsScreen from "@/screens/mentions";
-import { clearAllData } from "@/utils/helper";
-import { parseOrganisationThreadsResponse } from "@/services/mentions/parse-organisation-threads";
-import { syncRolesAndPermissionsFromApi } from "@/lib/role-permissions";
-import { AppText } from "@/components/ui/text";
-import { formatTabBadgeCount } from "@/utils";
-import { Channel } from "@/types/channel";
-import { Chat } from "@/types/chats";
-import { useTheme } from "@/theme/ThemeProvider";
+import React, { useCallback, useMemo } from 'react';
+import { Image, Platform, StyleSheet, View } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { normalize } from '@/utils/normalize';
+import { navigationBarBottomPadding } from '@/utils/status-bar-inset';
+import HomeScreen from '@/screens/home';
+import ChannelHome from '@/screens/channels';
+import SettingsHome from '@/screens/settings';
+import { useDataContext } from '@/store/useDataContext';
+import { GetRequest } from '@/utils/requests';
+import { useFocusEffect } from '@react-navigation/native';
+import { ACTIONS } from '@/store/types';
+import { BuzzTabStack } from '@/navigation/stacks/buzz/buzz-tab-stack';
+import MentionsScreen from '@/screens/mentions';
+import { clearAllData } from '@/utils/helper';
+import { parseOrganisationThreadsResponse } from '@/services/mentions/parse-organisation-threads';
+import { syncRolesAndPermissionsFromApi } from '@/lib/role-permissions';
+import { AppText } from '@/components/ui/text';
+import { formatTabBadgeCount } from '@/utils';
+import { Channel } from '@/types/channel';
+import { Chat } from '@/types/chats';
+import { useTheme } from '@/theme/ThemeProvider';
 
 const Tab = createBottomTabNavigator();
 
@@ -54,7 +54,7 @@ const TabNavigator = ({
     callback,
     unseenThreadCount,
   } = state;
-  const [currentTab, setCurrentTab] = React.useState("Chats");
+  const [currentTab, setCurrentTab] = React.useState('Chats');
   const insets = useSafeAreaInsets();
   const tabBarBottom = navigationBarBottomPadding(insets.bottom, normalize(12));
   const tabBarStyle = React.useMemo(
@@ -63,11 +63,11 @@ const TabNavigator = ({
       borderTopColor: colors.tabBarBorder,
       backgroundColor: colors.tabBar,
       height:
-        Platform.OS === "ios" ? normalize(85) : normalize(70) + tabBarBottom,
+        Platform.OS === 'ios' ? normalize(85) : normalize(70) + tabBarBottom,
       paddingBottom: tabBarBottom,
       paddingTop: normalize(8),
     }),
-    [colors, tabBarBottom]
+    [colors, tabBarBottom],
   );
 
   const tabStyles = React.useMemo(
@@ -75,22 +75,22 @@ const TabNavigator = ({
       StyleSheet.create({
         tabBarLabel: {
           fontSize: normalize(12),
-          fontWeight: "500",
+          fontWeight: '500',
         },
         tabIconWrap: {
           width: normalize(28),
           height: normalize(28),
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "visible",
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'visible',
         },
         tabIconInner: {
           width: normalize(24),
           height: normalize(24),
-          overflow: "visible",
+          overflow: 'visible',
         },
         tabBadge: {
-          position: "absolute",
+          position: 'absolute',
           top: normalize(-4),
           right: normalize(-10),
           minWidth: normalize(18),
@@ -99,8 +99,8 @@ const TabNavigator = ({
           backgroundColor: colors.primary,
           paddingHorizontal: normalize(4),
           paddingVertical: 0,
-          alignItems: "center",
-          justifyContent: "center",
+          alignItems: 'center',
+          justifyContent: 'center',
         },
         tabBadgeWide: {
           minWidth: normalize(32),
@@ -110,35 +110,35 @@ const TabNavigator = ({
           color: colors.white,
           fontSize: normalize(10),
           lineHeight: normalize(18),
-          textAlign: "center",
+          textAlign: 'center',
           includeFontPadding: false,
-          textAlignVertical: "center",
+          textAlignVertical: 'center',
         },
         tabBadgeTextWide: {
           fontSize: normalize(9),
           letterSpacing: -0.25,
         },
       }),
-    [colors]
+    [colors],
   );
 
   const channelTabUnreadTotal = useMemo(() => {
     return (userChannels || []).reduce(
       (sum, channel) => sum + getChannelUnreadCount(channel),
-      0
+      0,
     );
   }, [userChannels]);
 
   const showChannelTabBadge =
-    channelTabUnreadTotal > 0 && currentTab !== "Channels";
+    channelTabUnreadTotal > 0 && currentTab !== 'Channels';
 
   const chatsTabUnreadTotal = useMemo(() => {
     return (dms || []).reduce((sum, chat) => sum + getDmUnreadCount(chat), 0);
   }, [dms]);
 
-  const showChatsTabBadge = chatsTabUnreadTotal > 0 && currentTab !== "Chats";
+  const showChatsTabBadge = chatsTabUnreadTotal > 0 && currentTab !== 'Chats';
 
-  const showThreadsTabBadge = unseenThreadCount > 0 && currentTab !== "Threads";
+  const showThreadsTabBadge = unseenThreadCount > 0 && currentTab !== 'Threads';
 
   React.useEffect(() => {
     if (!orgId) return;
@@ -147,7 +147,7 @@ const TabNavigator = ({
 
     const syncDms = async () => {
       const { data, error } = await GetRequest(
-        `/organisations/${orgId}/dms?page=1&limit=50&search=`
+        `/organisations/${orgId}/dms?page=1&limit=50&search=`,
       );
 
       if (cancelled || error || !data?.data) return;
@@ -169,7 +169,7 @@ const TabNavigator = ({
 
     const syncUserChannels = async () => {
       const { data, error } = await GetRequest(
-        `/organisations/${orgId}/user-channels?page=1&limit=50&search=`
+        `/organisations/${orgId}/user-channels?page=1&limit=50&search=`,
       );
 
       if (cancelled || error || !data?.data) return;
@@ -191,7 +191,7 @@ const TabNavigator = ({
 
     const syncThreadsUnreadCount = async () => {
       const { data, error } = await GetRequest(
-        `/threads/organisations/${orgId}?page=1&limit=1`
+        `/threads/organisations/${orgId}?page=1&limit=1`,
       );
 
       if (cancelled || error || !data?.data) return;
@@ -227,14 +227,14 @@ const TabNavigator = ({
         }
       };
       getUser();
-    }, [dispatch, state?.callback])
+    }, [dispatch, state?.callback]),
   );
 
   useFocusEffect(
     useCallback(() => {
       const getOrgData = async () => {
         const { data, error } = await GetRequest(
-          `/organisations/${state?.orgId}`
+          `/organisations/${state?.orgId}`,
         );
 
         if (!error) {
@@ -252,7 +252,7 @@ const TabNavigator = ({
         }
       };
       getOrgData();
-    }, [dispatch, state?.callback])
+    }, [dispatch, state?.callback]),
   );
 
   return (
@@ -271,35 +271,35 @@ const TabNavigator = ({
             tintColor: focused ? colors.primary : colors.textSecondary,
           };
 
-          if (route.name === "Chats")
-            iconSource = require("@/assets/tabs/chats.png");
-          else if (route.name === "Channels")
-            iconSource = require("@/assets/tabs/channels.png");
-          else if (route.name === "Threads")
-            iconSource = require("@/assets/tabs/mentions.png");
-          else if (route.name === "Buzz")
-            iconSource = require("@/assets/tabs/buzz.png");
-          else if (route.name === "Settings")
-            iconSource = require("@/assets/tabs/settings.png");
+          if (route.name === 'Chats')
+            iconSource = require('@/assets/tabs/chats.png');
+          else if (route.name === 'Channels')
+            iconSource = require('@/assets/tabs/channels.png');
+          else if (route.name === 'Threads')
+            iconSource = require('@/assets/tabs/mentions.png');
+          else if (route.name === 'Buzz')
+            iconSource = require('@/assets/tabs/buzz.png');
+          else if (route.name === 'Settings')
+            iconSource = require('@/assets/tabs/settings.png');
 
           const showTabBadge =
-            (route.name === "Chats" && showChatsTabBadge) ||
-            (route.name === "Channels" && showChannelTabBadge) ||
-            (route.name === "Threads" && showThreadsTabBadge);
+            (route.name === 'Chats' && showChatsTabBadge) ||
+            (route.name === 'Channels' && showChannelTabBadge) ||
+            (route.name === 'Threads' && showThreadsTabBadge);
 
           const tabBadgeCount =
-            route.name === "Chats"
+            route.name === 'Chats'
               ? chatsTabUnreadTotal
-              : route.name === "Channels"
+              : route.name === 'Channels'
               ? channelTabUnreadTotal
-              : route.name === "Threads"
+              : route.name === 'Threads'
               ? unseenThreadCount
               : 0;
 
           const useBadgedTabIcon =
-            route.name === "Chats" ||
-            route.name === "Channels" ||
-            route.name === "Threads";
+            route.name === 'Chats' ||
+            route.name === 'Channels' ||
+            route.name === 'Threads';
 
           if (useBadgedTabIcon) {
             const badgeLabel = formatTabBadgeCount(tabBadgeCount);
@@ -341,7 +341,7 @@ const TabNavigator = ({
           const tabIndex = e.data.state.index;
           const tabRoute = e.data.state.routeNames[tabIndex];
           setCurrentTab(tabRoute);
-          if (onChatsFocus) onChatsFocus(tabRoute === "Chats");
+          if (onChatsFocus) onChatsFocus(tabRoute === 'Chats');
         },
       }}
     >

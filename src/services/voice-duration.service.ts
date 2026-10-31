@@ -1,5 +1,6 @@
-import RNFS from "react-native-fs";
-import { ensureCachedVoiceAudio, VoiceMedia } from "@/utils/voice-message";
+/* eslint-disable no-bitwise */
+import RNFS from 'react-native-fs';
+import { ensureCachedVoiceAudio, VoiceMedia } from '@/utils/voice-message';
 
 /**
  * Resolves voice-note durations without playback so players can show the real
@@ -21,17 +22,17 @@ const cacheKeyFor = (media: VoiceMedia): string =>
 
 const stdAtob: (b64: string) => string =
   // Hermes exposes globalThis.atob on RN >= 0.74; manual fallback otherwise.
-  typeof (globalThis as { atob?: (b64: string) => string }).atob === "function"
+  typeof (globalThis as { atob?: (b64: string) => string }).atob === 'function'
     ? (b64: string) =>
         (globalThis as unknown as { atob: (b64: string) => string }).atob(b64)
     : (b64: string) => {
         const table =
-          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-        let out = "";
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+        let out = '';
         let bits = 0;
         let acc = 0;
-        for (const ch of b64.replace(/[^A-Za-z0-9+/=]/g, "")) {
-          if (ch === "=") {
+        for (const ch of b64.replace(/[^A-Za-z0-9+/=]/g, '')) {
+          if (ch === '=') {
             break;
           }
           acc = (acc << 6) | table.indexOf(ch);
@@ -140,7 +141,7 @@ async function probeDurationMs(media: VoiceMedia): Promise<number> {
       if (size <= 0) {
         return 0;
       }
-      const b64 = await RNFS.read(localPath, size, 0, "base64");
+      const b64 = await RNFS.read(localPath, size, 0, 'base64');
       const decoded = stdAtob(b64);
       const bytes = new Uint8Array(decoded.length);
       for (let i = 0; i < decoded.length; i++) {
