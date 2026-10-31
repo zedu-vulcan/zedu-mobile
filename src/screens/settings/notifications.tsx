@@ -19,13 +19,15 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { createSettingsSubScreenStyles } from '@/theme/createScreenStyles';
 import type { ThemeColors } from '@/theme/types';
 
-const TIME_OPTIONS = Array.from({ length: 24 * 2 }, (_, i) => {
+export const TIME_OPTIONS = Array.from({ length: 24 * 2 }, (_, i) => {
   const hour = Math.floor(i / 2);
   const min = i % 2 === 0 ? '00' : '30';
   const ampm = hour < 12 ? 'AM' : 'PM';
   const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
   return `${displayHour}:${min} ${ampm}`;
 });
+
+export const END_TIME_OPTIONS = [...TIME_OPTIONS, '11:59 PM'];
 
 const CustomToggle = ({
   active,
@@ -95,6 +97,9 @@ const NotificationScreen = ({ navigation }: any) => {
   const [selectingFor, setSelectingFor] = useState<'startTime' | 'endTime'>(
     'startTime',
   );
+
+  const timeOptions =
+    selectingFor === 'endTime' ? END_TIME_OPTIONS : TIME_OPTIONS;
 
   const [prefs, setPrefs] = useState({
     notificationType: 'all',
@@ -378,7 +383,7 @@ const NotificationScreen = ({ navigation }: any) => {
       />
 
       <AppBottomSheet ref={bottomSheetRef} snapPoints={['50%']}>
-        {TIME_OPTIONS.map(item => (
+        {timeOptions.map(item => (
           <TouchableOpacity
             key={item}
             style={styles.timeOption}
