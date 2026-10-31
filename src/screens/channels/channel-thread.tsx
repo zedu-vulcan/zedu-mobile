@@ -218,7 +218,10 @@ const ChannelThreadScreen = ({ navigation, route }: any) => {
     );
 
     if (found) {
-      mentionUserSheetRef.current?.open(found);
+      mentionUserSheetRef.current?.open(found, {
+        type: 'channel',
+        channelId: channel_id,
+      });
     }
   };
 
