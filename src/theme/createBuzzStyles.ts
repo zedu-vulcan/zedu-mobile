@@ -2239,7 +2239,11 @@ export function createWelcomeScreenStyles(
       justifyContent: isTablet ? 'center' : 'flex-end',
       paddingBottom: isTablet ? 0 : 20,
       ...(isTablet
-        ? { width: '100%' as const, maxWidth: 420, alignSelf: 'center' as const }
+        ? {
+            width: '100%' as const,
+            maxWidth: 420,
+            alignSelf: 'center' as const,
+          }
         : {}),
     },
     tabletButton: {
