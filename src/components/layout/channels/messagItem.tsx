@@ -30,6 +30,7 @@ import { parseChannelEventMessage } from '@/lib/channel-event-message';
 import { ChannelEventMessageBlock } from './channel-event-message-block';
 import { truncateUsernameForChannel } from '@/utils/truncate-username';
 import ReactionDetailsSheet from '../chat/reaction-details';
+import { useBrowseChannels } from '@/services/channels/browse-channel';
 
 const { width } = Dimensions.get('window');
 
@@ -58,6 +59,12 @@ const MessageItem = ({
   >(null);
   const { state, dispatch } = useDataContext();
   const navigation = useNavigation();
+
+  // Get the orgId from the state, fallback to empty string
+  const orgId = state?.orgId || '';
+
+  // Pass the orgId to the hook
+  const { channels } = useBrowseChannels(orgId, '');
 
   const forwardData = getForwardedMessageFromItem(item);
   const showForwardComment = hasForwardComment(item);
@@ -95,7 +102,6 @@ const MessageItem = ({
       screen: 'ChannelThread',
       params: { thread_id: item?.thread_id, channel_id: item?.channels_id },
     });
-    dispatch({ type: ACTIONS.LOAD_THREAD, payload: !state.loadThreadCallback });
   };
 
   const renderReplyParticipants = () => {
@@ -227,16 +233,31 @@ const MessageItem = ({
 
     return null;
   };
-
   const renderMessageContent = () => (
     <MessageContent
       html={item.message}
       media={item.media}
       onMentionUser={onMentionUser}
       textStyle={styles.messageText}
+      onMentionChannel={channelName => {
+        const cleanName = channelName.replace(/[@#\s]/g, '').toLowerCase();
+
+        const targetChannel = channels?.find((c: any) => {
+          const cName = (c.name || c.channel_name || '')
+            .replace(/[@#\s]/g, '')
+            .toLowerCase();
+          return cName === cleanName;
+        });
+
+        if (targetChannel) {
+          navigation.navigate('ChannelStack', {
+            screen: 'ChannelChat',
+            params: { channel_id: targetChannel.channels_id } as any,
+          });
+        }
+      }}
     />
   );
-
   return (
     <View>
       {showDateHeader && (

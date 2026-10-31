@@ -29,6 +29,7 @@ import { MessageLinkPreviews } from './link-preview';
 type MessageContentProps = {
   html?: string | null;
   onMentionUser?: (userId: string) => void;
+  onMentionChannel?: (channelName: string) => void;
   containerStyle?: StyleProp<ViewStyle>;
   /** Extra text styles merged into the message body (e.g. bubble padding). */
   textStyle?: StyleProp<TextStyle>;
@@ -51,6 +52,7 @@ type InlineSegment = Exclude<
 export const MessageContent: React.FC<MessageContentProps> = ({
   html,
   onMentionUser,
+  onMentionChannel,
   containerStyle,
   textStyle,
   media,
@@ -177,15 +179,26 @@ export const MessageContent: React.FC<MessageContentProps> = ({
             </Text>
           );
         }
-
         const isChannel = segment.mentionKind === 'channel';
         return (
           <Text
             key={key}
             style={isChannel ? styles.channelMention : styles.mention}
             onPress={() => {
-              if (!isChannel && segment.userId) {
-                onMentionUser?.(segment.userId);
+              const mention = segment as any;
+              console.log(
+                'TAPPED TAG! Label:',
+                mention.label,
+                'ID:',
+                mention.userId,
+                'isChannel:',
+                isChannel,
+              );
+
+              if (isChannel) {
+                onMentionChannel?.(mention.label || mention.userId || '');
+              } else if (mention.userId) {
+                onMentionUser?.(mention.userId);
               }
             }}
           >
@@ -193,7 +206,7 @@ export const MessageContent: React.FC<MessageContentProps> = ({
           </Text>
         );
       }),
-    [handleUrlPress, markStyle, onMentionUser, styles],
+    [handleUrlPress, markStyle, onMentionUser, onMentionChannel, styles],
   );
 
   const blocks = useMemo(() => {

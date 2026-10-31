@@ -202,7 +202,7 @@ const ChatInput = ({
   const updateMentionTrigger = (text: string, cursorPos: number) => {
     const mention = getActiveMention(text, cursorPos);
     if (mention) {
-      onMentionTrigger?.(mention.query, mention.pos);
+      onMentionTrigger?.(mention.query, mention.pos, mention.trigger); // <--- Pass trigger
     } else {
       onMentionCancel?.();
     }

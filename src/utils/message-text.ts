@@ -523,22 +523,27 @@ export const decodeHtmlEntities = (text: string): string =>
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'");
 
+// Change this back to only trigger for @
 const MENTION_TRIGGER_REGEX = /(?:^|\s)@([\w.\-_]*)$/;
 
-/** Returns the active @mention query at the cursor, if any. */
+/** Returns the active @ or # mention query at the cursor, if any. */
 export const getActiveMention = (
   text: string,
   cursorPos: number,
-): { query: string; pos: number } | null => {
+): { query: string; pos: number; trigger: string } | null => {
   const beforeCursor = text.slice(0, Math.max(0, cursorPos));
   const match = beforeCursor.match(MENTION_TRIGGER_REGEX);
   if (!match) {
     return null;
   }
 
+  // match[0] will be the whole string (e.g., " @gen"), we extract the @ or #
+  const trigger = match[0].trim().charAt(0);
+
   return {
     query: match[1] ?? '',
     pos: cursorPos,
+    trigger, // We return the trigger so the UI knows if it's @ or #
   };
 };
 
