@@ -19,12 +19,14 @@ import moment from 'moment';
 interface ThreadItemProps {
   item: any;
   onMentionUser?: (userId: string) => void;
+  onMentionChannel?: (channelId: string, label: string) => void;
   onOpenProfile: (item: any) => void;
 }
 
 const ThreadItem = ({
   item,
   onMentionUser,
+  onMentionChannel,
   onOpenProfile,
 }: ThreadItemProps) => {
   const { colors } = useTheme();
@@ -218,6 +220,7 @@ const ThreadItem = ({
                   html={item.message}
                   media={item.media}
                   onMentionUser={onMentionUser}
+                  onMentionChannel={onMentionChannel}
                 />
               </View>
             )}

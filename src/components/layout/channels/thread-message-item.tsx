@@ -25,6 +25,7 @@ interface ThreadMessageItemProps {
   messages: any[];
   onLongPress: (item: ChannelChat) => void;
   onMentionUser?: (userId: string) => void;
+  onMentionChannel?: (channelId: string, label: string) => void;
   onOpenProfile: (item: ChannelChat) => void;
   isGroup?: boolean;
   inverted?: boolean;
@@ -36,6 +37,7 @@ const ThreadMessageItem = ({
   messages,
   onLongPress,
   onMentionUser,
+  onMentionChannel,
   onOpenProfile,
   isGroup,
   inverted = false,
@@ -279,6 +281,7 @@ const ThreadMessageItem = ({
                     html={item.message || item.text}
                     media={item.media}
                     onMentionUser={onMentionUser}
+                    onMentionChannel={onMentionChannel}
                   />
                 </View>
               )}

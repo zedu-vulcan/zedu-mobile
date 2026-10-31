@@ -40,6 +40,7 @@ const MessageItem = ({
   onLongPress,
   isGroup,
   onMentionUser,
+  onMentionChannel,
   editMsgId,
   onEdit,
 }: any) => {
@@ -233,6 +234,7 @@ const MessageItem = ({
       html={item.message}
       media={item.media}
       onMentionUser={onMentionUser}
+      onMentionChannel={onMentionChannel}
       textStyle={styles.messageText}
     />
   );
@@ -324,6 +326,7 @@ const MessageItem = ({
                 <ForwardedMessageBlock
                   data={forwardData}
                   onMentionUser={onMentionUser}
+                  onMentionChannel={onMentionChannel}
                 />
               ) : null}
 
