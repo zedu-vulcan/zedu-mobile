@@ -1,5 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Image, StatusBar, Alert, Linking } from 'react-native';
+import {
+  View,
+  Image,
+  StatusBar,
+  Alert,
+  Linking,
+  useWindowDimensions,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText } from '../components/ui/text';
 import { AppButton } from '../components/ui/button';
@@ -15,7 +22,12 @@ const clientBaseUrl = (CLIENT_URL || 'https://zedu.chat').replace(/\/$/, '');
 
 const WelcomeScreen: React.FC = () => {
   const { colors, isDark } = useTheme();
-  const styles = useMemo(() => createWelcomeScreenStyles(colors), [colors]);
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 600;
+  const styles = useMemo(
+    () => createWelcomeScreenStyles(colors, width),
+    [colors, width],
+  );
   const navigation = useNavigation();
   const [permissionsGranted, setPermissionsGranted] = useState(false);
   const [_loading, setLoading] = useState(false);
@@ -66,59 +78,68 @@ const WelcomeScreen: React.FC = () => {
         backgroundColor={colors.statusBarBackground}
       />
 
-      <View style={styles.topSection}>
-        <View style={styles.logoContainer}>
-          <Image
-            source={
-              isDark
-                ? require('@/assets/zedu-logo-dark.png')
-                : require('../assets/splash-logo.png')
+      <View style={styles.content}>
+        <View style={styles.topSection}>
+          <View style={styles.logoContainer}>
+            <Image
+              source={
+                isDark
+                  ? require('@/assets/zedu-logo-dark.png')
+                  : require('../assets/splash-logo.png')
+              }
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </View>
+          <AppText variant="regular" style={styles.slogan}>
+            Seamless video calls and meetings for every learning community.
+          </AppText>
+        </View>
+
+        <View style={styles.middleSection}>
+          <AppText variant="bold" style={styles.welcomeTitle}>
+            Welcome to Zedu
+          </AppText>
+
+          <AppText size={13} style={styles.legalText}>
+            By proceeding, you consent to our{'\n'}
+            <AppText
+              size={13}
+              style={styles.linkText}
+              onPress={() => openURL(`${clientBaseUrl}/policy`)}
+            >
+              Privacy Policy
+            </AppText>{' '}
+            and our{' '}
+            <AppText
+              size={13}
+              style={styles.linkText}
+              onPress={() => openURL(`${clientBaseUrl}/terms-of-service`)}
+            >
+              Terms of Service
+            </AppText>
+          </AppText>
+        </View>
+
+        <View style={styles.bottomSection}>
+          <AppButton
+            title="Create Account"
+            onPress={() => navigation.navigate('Signup')}
+            style={
+              isTablet
+                ? styles.tabletPrimaryButton
+                : { marginBottom: normalize(14) }
             }
-            style={styles.logo}
-            resizeMode="contain"
+            textStyle={isTablet ? styles.tabletButtonText : undefined}
+          />
+          <AppButton
+            title="Login"
+            variant="secondary"
+            onPress={() => navigation.navigate('Signin')}
+            style={isTablet ? styles.tabletButton : undefined}
+            textStyle={isTablet ? styles.tabletButtonText : undefined}
           />
         </View>
-        <AppText variant="regular" style={styles.slogan}>
-          Seamless video calls and meetings for every learning community.
-        </AppText>
-      </View>
-
-      <View style={styles.middleSection}>
-        <AppText variant="bold" style={styles.welcomeTitle}>
-          Welcome to Zedu
-        </AppText>
-
-        <AppText size={13} style={styles.legalText}>
-          By proceeding, you consent to our{'\n'}
-          <AppText
-            size={13}
-            style={styles.linkText}
-            onPress={() => openURL(`${clientBaseUrl}/policy`)}
-          >
-            Privacy Policy
-          </AppText>{' '}
-          and our{' '}
-          <AppText
-            size={13}
-            style={styles.linkText}
-            onPress={() => openURL(`${clientBaseUrl}/terms-of-service`)}
-          >
-            Terms of Service
-          </AppText>
-        </AppText>
-      </View>
-
-      <View style={styles.bottomSection}>
-        <AppButton
-          title="Create Account"
-          onPress={() => navigation.navigate('Signup')}
-          style={{ marginBottom: normalize(14) }}
-        />
-        <AppButton
-          title="Login"
-          variant="secondary"
-          onPress={() => navigation.navigate('Signin')}
-        />
       </View>
     </SafeAreaView>
   );
