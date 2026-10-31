@@ -202,7 +202,7 @@ const ChatInput = ({
   const updateMentionTrigger = (text: string, cursorPos: number) => {
     const mention = getActiveMention(text, cursorPos);
     if (mention) {
-      onMentionTrigger?.(mention.query, mention.pos);
+      onMentionTrigger?.(mention.query, mention.pos, mention.trigger);
     } else {
       onMentionCancel?.();
     }
@@ -459,6 +459,17 @@ const ChatInput = ({
               >
                 {composerSegments.map((segment, index) => {
                   if (segment.type === 'channelMention') {
+                    return (
+                      <AppText
+                        key={`composer-segment-${index}`}
+                        style={styles.composerChannelMentionText}
+                      >
+                        {segment.content}
+                      </AppText>
+                    );
+                  }
+
+                  if (segment.type === 'channelRefMention') {
                     return (
                       <AppText
                         key={`composer-segment-${index}`}
