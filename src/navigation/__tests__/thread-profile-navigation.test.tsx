@@ -76,7 +76,7 @@ jest.mock('react-native-vector-icons/Ionicons', () => ({
 }));
 
 const message = {
-  avatar_url: 'https://example.test/avatar.png',
+  avatar_url: 'https://zedu.chat/avatar.png',
   created_at: '2026-10-13T10:00:00.000Z',
   id: 'message-1',
   media: [],
@@ -257,7 +257,7 @@ describe('thread profile navigation', () => {
         item={{
           ...message,
           avatar_url: '',
-          default_avatar_url: 'https://example.test/default.png',
+          default_avatar_url: 'https://zedu.chat/default.png',
         }}
         index={0}
         messages={[message]}
@@ -269,7 +269,7 @@ describe('thread profile navigation', () => {
 
     const avatar = tree.root.findByType(Image);
     expect(avatar.props.source).toEqual({
-      uri: 'https://example.test/default.png',
+      uri: 'https://zedu.chat/default.png',
     });
     act(() => tree.unmount());
   });
