@@ -6,6 +6,8 @@ import Container from '@/components/layout/container';
 import { launchCamera } from 'react-native-image-picker';
 import { ThemedEmojiKeyboard } from '@/components/ui/themed-emoji-keyboard';
 import ChatInput from '@/components/layout/chat/chat-input';
+import EditingReplyBanner from '@/components/layout/chat/editing-reply-banner';
+import { useReplyEdit } from '@/hooks/useReplyEdit';
 import ChatKeyboardAvoidingView from '@/components/layout/chat/chat-keyboard-avoiding-view';
 import { useTyping } from '@/hooks/useTyping';
 import { MediaPickerSheet } from '@/components/layout/chat/media-picker';
@@ -76,6 +78,16 @@ const ChannelThreadScreen = ({ navigation, route }: any) => {
   });
 
   const { uploadFiles, clearUploads } = useFileUpload();
+
+  const replyEdit = useReplyEdit({
+    channelId: channel_id,
+    threadId: thread_id,
+    chatType: 'channel',
+    setMessage,
+    mentionsMetadata,
+    setMentionsMetadata,
+    onTypingChange: handleTyping,
+  });
 
   const [isVoiceUploading, setIsVoiceUploading] = useState(false);
 
@@ -331,7 +343,7 @@ const ChannelThreadScreen = ({ navigation, route }: any) => {
         data={replyChat}
         inverted
         keyExtractor={item => String(item.id ?? item.message_id)}
-        extraData={[replyChat, highlightMsgId]}
+        extraData={[replyChat, highlightMsgId, replyEdit.editingReplyId]}
         onScrollToIndexFailed={handleScrollToIndexFailed}
         renderItem={({ item, index }) => (
           <View
@@ -343,8 +355,10 @@ const ChannelThreadScreen = ({ navigation, route }: any) => {
             }
             style={{
               backgroundColor:
-                highlightMsgId &&
-                String(item.id ?? item.message_id) === String(highlightMsgId)
+                replyEdit.editingReplyId ===
+                  String(item.id ?? item.message_id) ||
+                (highlightMsgId &&
+                  String(item.id ?? item.message_id) === String(highlightMsgId))
                   ? colors.chatHighlight
                   : 'transparent',
             }}
@@ -390,6 +404,7 @@ const ChannelThreadScreen = ({ navigation, route }: any) => {
           ref={actionSheetRef}
           item={selectedMsg}
           onClose={onClose}
+          handleEdit={() => replyEdit.startEdit(selectedMsg)}
         />
       )}
 
@@ -421,11 +436,19 @@ const ChannelThreadScreen = ({ navigation, route }: any) => {
           />
         )}
 
+        {replyEdit.isEditing && (
+          <EditingReplyBanner onCancel={replyEdit.cancelEdit} />
+        )}
+
         <ChatInput
           message={message}
           setMessage={setMessage}
           onTypingChange={handleTyping}
-          onSend={(content: any) => handleSendMessage(content)}
+          onSend={(content: any) =>
+            replyEdit.isEditing
+              ? replyEdit.submitEdit(content)
+              : handleSendMessage(content)
+          }
           onVoiceRecorded={handleVoiceRecorded}
           onVoiceSendReady={handleVoiceSendReady}
           onVoiceCancel={handleVoiceCancel}

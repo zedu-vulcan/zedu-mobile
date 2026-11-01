@@ -225,6 +225,7 @@ const ThreadMessageItem = ({
                 </AppText>
                 <AppText size={10} style={styles.timeText}>
                   {moment(item.created_at).format('h:mm a')}
+                  {item.edited ? ' · Edited' : ''}
                 </AppText>
               </View>
 

@@ -28,6 +28,14 @@ export function getThreadMessageSendUrl(
   }
 }
 
+/**
+ * Replies in every thread type (channel, DM, group DM) are edited through the
+ * channel messages endpoint, the same one the web app uses.
+ */
+export function getReplyEditUrl(channelId: string): string {
+  return `/channels/${channelId}/messages`;
+}
+
 export function getThreadMessageCallbackAction(chatType: ThreadChatType) {
   return chatType === 'channel' ? ACTIONS.CHANNEL_CALLBACK : ACTIONS.CALLBACK;
 }

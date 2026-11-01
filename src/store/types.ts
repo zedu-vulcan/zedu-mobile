@@ -418,6 +418,7 @@ interface ReplyChatAction {
     data?: any[];
     page?: number;
     removedMessageId?: string;
+    updatedMessage?: any;
   };
 }
 

@@ -103,6 +103,14 @@ export const ReplyMessageAction = forwardRef<
     onClose();
   };
 
+  const handleEditClick = () => {
+    handleEdit?.();
+    if (ref && 'current' in ref) {
+      ref.current?.close();
+    }
+    onClose();
+  };
+
   const handleDelete = async () => {
     const messageId = item?.id;
     if (!messageId) {
@@ -456,11 +464,11 @@ export const ReplyMessageAction = forwardRef<
                   handleClick={handleThread}
                 />
               )}
-              {item?.user_id === state?.user?.user_id && (
+              {item?.user_id === state?.user?.user_id && handleEdit && (
                 <ActionItem
                   label="Edit Message"
                   icon={require('@/assets/icons/edit-message.png')}
-                  handleClick={handleEdit}
+                  handleClick={handleEditClick}
                 />
               )}
               {/* <ActionItem label="Forward" icon={require('@/assets/icons/forward.png')} handleClick={handleForward} /> */}

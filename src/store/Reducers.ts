@@ -724,6 +724,22 @@ const reducers = (state: AppState, action: Action): AppState => {
         };
       }
 
+      // Edit an existing reply in place (keeps its position in the list)
+      if (action.payload.updatedMessage) {
+        const updated = action.payload.updatedMessage;
+        const updatedId = updated?.id ?? updated?.message_id;
+        if (!updatedId) return state;
+        return {
+          ...state,
+          replyChat: state.replyChat.map((msg: any) => {
+            const msgId = msg?.id ?? msg?.message_id;
+            return String(msgId) === String(updatedId)
+              ? { ...msg, ...updated }
+              : msg;
+          }),
+        };
+      }
+
       if (action.payload.newMessage) {
         const newMessage = action.payload.newMessage;
 
@@ -735,6 +751,26 @@ const reducers = (state: AppState, action: Action): AppState => {
         }
 
         const incomingId = newMessage.id ?? newMessage.message_id;
+
+        // A realtime event for a reply we already have (e.g. it was edited)
+        // replaces it where it is, instead of moving it to the bottom.
+        if (
+          incomingId &&
+          state.replyChat.some(
+            (msg: any) =>
+              !msg?.isOptimistic &&
+              String(msg?.id ?? msg?.message_id) === String(incomingId),
+          )
+        ) {
+          return {
+            ...state,
+            replyChat: state.replyChat.map((msg: any) =>
+              String(msg?.id ?? msg?.message_id) === String(incomingId)
+                ? { ...msg, ...newMessage }
+                : msg,
+            ),
+          };
+        }
         const replyChat = state.replyChat.filter((msg: any) => {
           const msgId = msg?.id ?? msg?.message_id;
           if (incomingId && msgId && String(msgId) === String(incomingId)) {
