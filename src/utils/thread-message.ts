@@ -2,6 +2,10 @@ import { ACTIONS } from '@/store/types';
 
 export type ThreadChatType = 'dm' | 'group_dm' | 'channel';
 
+export function getReplyEditUrl(channelId: string): string {
+  return `/channels/${channelId}/messages`;
+}
+
 const REPLY_THREAD_SCREEN_NAMES = [
   'ChatThreadScreen',
   'GroupChatThreadScreen',

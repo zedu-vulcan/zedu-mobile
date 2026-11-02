@@ -24,6 +24,8 @@ import {
   ThreadChatType,
 } from '@/utils/thread-message';
 import { ReplyMessageAction } from '@/components/layout/chat/reply-message-action';
+import EditingReplyBanner from '@/components/layout/chat/editing-reply-banner';
+import { useReplyEdit } from '@/hooks/useReplyEdit';
 import ChatBackground from '@/components/layout/chat/chat-background';
 import { ShowNotify } from '@/components/ui/toast';
 import uuid from 'react-native-uuid';
@@ -38,6 +40,7 @@ const ChatThreadScreen = ({ navigation, route }: any) => {
   const actionSheetRef = useRef<any>(null);
   const pickerSheetRef = useRef<any>(null);
   const [selectedMsg, setSelectedMsg] = useState<Channel | null>(null);
+  const [mentionsMetadata, setMentionsMetadata] = useState<any[]>([]);
   const [pendingMedia, setPendingMedia] = useState<{
     uri: string;
     type: 'image' | 'file';
@@ -68,6 +71,15 @@ const ChatThreadScreen = ({ navigation, route }: any) => {
   });
 
   const { uploadFiles, clearUploads } = useFileUpload();
+  const replyEdit = useReplyEdit({
+    channelId: channel_id,
+    threadId: thread_id,
+    chatType,
+    setMessage,
+    mentionsMetadata,
+    setMentionsMetadata,
+    onTypingChange: handleTyping,
+  });
 
   const [isVoiceUploading, setIsVoiceUploading] = useState(false);
 
@@ -221,7 +233,7 @@ const ChatThreadScreen = ({ navigation, route }: any) => {
         data={replyChat}
         inverted
         keyExtractor={item => String(item.id ?? item.message_id)}
-        extraData={replyChat}
+        extraData={[replyChat, replyEdit.editingReplyId]}
         renderItem={({ item, index }) => (
           <ThreadMessageItem
             item={{
@@ -233,6 +245,14 @@ const ChatThreadScreen = ({ navigation, route }: any) => {
             index={index}
             messages={replyChat}
             inverted={true}
+            isHighlighted={
+              (replyEdit.editingReplyId !== null &&
+                String(item.id ?? item.message_id) ===
+                  replyEdit.editingReplyId) ||
+              (route.params?.highlightMsgId != null &&
+                String(route.params.highlightMsgId) ===
+                  String(item.id ?? item.message_id))
+            }
             onLongPress={() => handleLongPress(item)}
           />
         )}
@@ -257,6 +277,8 @@ const ChatThreadScreen = ({ navigation, route }: any) => {
           ref={actionSheetRef}
           item={selectedMsg}
           onClose={onClose}
+          handleEdit={() => replyEdit.startEdit(selectedMsg)}
+          threadChatType={chatType}
         />
       )}
 
@@ -279,11 +301,18 @@ const ChatThreadScreen = ({ navigation, route }: any) => {
       )}
 
       <ChatKeyboardAvoidingView>
+        {replyEdit.isEditing && (
+          <EditingReplyBanner onCancel={replyEdit.cancelEdit} />
+        )}
         <ChatInput
           message={message}
           setMessage={setMessage}
           onTypingChange={handleTyping}
-          onSend={(content: any) => handleSendMessage(content)}
+          onSend={(content: any) =>
+            replyEdit.isEditing
+              ? replyEdit.submitEdit(content)
+              : handleSendMessage(content)
+          }
           onVoiceRecorded={handleVoiceRecorded}
           onVoiceSendReady={handleVoiceSendReady}
           onVoiceCancel={handleVoiceCancel}

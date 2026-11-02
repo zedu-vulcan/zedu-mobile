@@ -651,6 +651,10 @@ export function createThreadItemStyles(colors: ThemeColors) {
       marginBottom: 20,
       width: '100%',
     },
+    highlightedRow: {
+      backgroundColor: colors.chatHighlight,
+      borderRadius: 8,
+    },
     sentRow: { alignSelf: 'flex-end', paddingRight: 10 },
     messageColumn: { flex: 1, minWidth: 0 },
     groupAvatarContainer: { marginRight: 5, flexShrink: 0 },

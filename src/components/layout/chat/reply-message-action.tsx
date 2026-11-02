@@ -191,6 +191,11 @@ export const ReplyMessageAction = forwardRef<
     onClose();
   };
 
+  const handleEditMessage = () => {
+    handleEdit?.();
+    closeSheet();
+  };
+
   const handleCopyMessage = async () => {
     const text = getPlainMessageText(item?.message || '');
 
@@ -365,11 +370,11 @@ export const ReplyMessageAction = forwardRef<
                   handleClick={handleThread}
                 />
               )}
-              {item?.user_id === state?.user?.user_id && (
+              {handleEdit && item?.user_id === state?.user?.user_id && (
                 <ActionItem
                   label="Edit Message"
                   icon={require('@/assets/icons/edit-message.png')}
-                  handleClick={handleEdit}
+                  handleClick={handleEditMessage}
                 />
               )}
               {/* <ActionItem label="Forward" icon={require('@/assets/icons/forward.png')} handleClick={handleForward} /> */}

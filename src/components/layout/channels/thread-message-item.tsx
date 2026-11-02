@@ -25,6 +25,7 @@ const ThreadMessageItem = ({
   onLongPress,
   onMentionUser,
   isGroup,
+  isHighlighted = false,
   inverted = false,
 }: any) => {
   const { colors } = useTheme();
@@ -180,7 +181,9 @@ const ThreadMessageItem = ({
         </View>
       )}
 
-      <View style={[styles.rowContainer]}>
+      <View
+        style={[styles.rowContainer, isHighlighted && styles.highlightedRow]}
+      >
         <UserStatusIcon user={item} style={styles.threadStatusIcon} />
         <TouchableOpacity
           style={styles.groupAvatarContainer}
@@ -216,6 +219,7 @@ const ThreadMessageItem = ({
                 </AppText>
                 <AppText size={10} style={styles.timeText}>
                   {moment(item.created_at).format('h:mm a')}
+                  {item.edited ? ' · Edited' : ''}
                 </AppText>
               </View>
 

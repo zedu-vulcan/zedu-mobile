@@ -663,6 +663,22 @@ const reducers = (state: AppState, action: Action): AppState => {
         };
       }
 
+      if (action.payload.updatedMessage) {
+        const updatedMessage = action.payload.updatedMessage;
+        const updatedId = updatedMessage.id ?? updatedMessage.message_id;
+        return {
+          ...state,
+          replyChat: state.replyChat.map((msg: any) => {
+            const messageId = msg?.id ?? msg?.message_id;
+            return updatedId != null &&
+              messageId != null &&
+              String(messageId) === String(updatedId)
+              ? { ...msg, ...updatedMessage }
+              : msg;
+          }),
+        };
+      }
+
       if (action.payload.newMessage) {
         const newMessage = action.payload.newMessage;
 
@@ -674,6 +690,25 @@ const reducers = (state: AppState, action: Action): AppState => {
         }
 
         const incomingId = newMessage.id ?? newMessage.message_id;
+        const existingIndex = state.replyChat.findIndex((msg: any) => {
+          const messageId = msg?.id ?? msg?.message_id;
+          return (
+            !msg?.isOptimistic &&
+            incomingId != null &&
+            messageId != null &&
+            String(messageId) === String(incomingId)
+          );
+        });
+
+        if (existingIndex !== -1) {
+          return {
+            ...state,
+            replyChat: state.replyChat.map((msg: any, index: number) =>
+              index === existingIndex ? { ...msg, ...newMessage } : msg,
+            ),
+          };
+        }
+
         const replyChat = state.replyChat.filter((msg: any) => {
           const msgId = msg?.id ?? msg?.message_id;
           if (incomingId && msgId && String(msgId) === String(incomingId)) {
