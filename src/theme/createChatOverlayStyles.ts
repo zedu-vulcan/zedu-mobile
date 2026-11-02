@@ -659,8 +659,8 @@ export function createThreadItemStyles(colors: ThemeColors) {
       width: 35,
       height: 35,
       borderRadius: 50,
-      borderWidth: 2,
-      borderColor: colors.primary,
+      borderWidth: 1,
+      borderColor: colors.border,
     },
     senderNameLabel: { paddingHorizontal: 8, paddingTop: 4, paddingBottom: 2 },
     senderRow: {
@@ -1492,24 +1492,6 @@ export function createChatMediaStyles(colors: ThemeColors) {
       textAlign: 'center',
       marginTop: 40,
       fontSize: 15,
-    },
-    emptyState: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingHorizontal: 32,
-      paddingBottom: 40,
-    },
-    emptyTitle: {
-      color: colors.textPrimary,
-      textAlign: 'center',
-      marginTop: 16,
-    },
-    emptyDescription: {
-      color: colors.messageMeta,
-      textAlign: 'center',
-      marginTop: 6,
-      lineHeight: 20,
     },
     footerLoader: {
       width: '100%',
