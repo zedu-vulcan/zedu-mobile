@@ -534,7 +534,11 @@ export const useFileManagement = (navigation: FileManagementNavigation) => {
   const handleConfirmUpload = useCallback(async () => {
     if (!pendingUploadFiles.length) return;
 
-    const { data, error: uploadError } = await uploadFiles(pendingUploadFiles);
+    const targetFolderId = openFolder?.id ?? null;
+    const { data, error: uploadError } = await uploadFiles(
+      pendingUploadFiles,
+      targetFolderId,
+    );
     if (uploadError || !data) {
       dispatch({
         type: ACTIONS.ERROR,
@@ -548,11 +552,23 @@ export const useFileManagement = (navigation: FileManagementNavigation) => {
 
     setUploadConfirmVisible(false);
     setPendingUploadFiles([]);
+    dispatch({ type: ACTIONS.SUCCESS, payload: 'Files uploaded successfully' });
+    if (targetFolderId) {
+      // Stay in the folder the user uploaded into and show the new file there.
+      refreshFolderFiles();
+      return;
+    }
     setActiveTab('files');
     setOpenFolder(null);
-    dispatch({ type: ACTIONS.SUCCESS, payload: 'Files uploaded successfully' });
     refreshRoot();
-  }, [dispatch, pendingUploadFiles, refreshRoot, uploadFiles]);
+  }, [
+    dispatch,
+    openFolder,
+    pendingUploadFiles,
+    refreshFolderFiles,
+    refreshRoot,
+    uploadFiles,
+  ]);
 
   const handleNewFolder = useCallback(() => {
     setEditingFolder(null);

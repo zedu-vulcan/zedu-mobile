@@ -9,13 +9,19 @@ export const useFileUpload = () => {
   const [uploadedMedias, setUploadedMedias] = useState<any[]>([]);
   const { dispatch } = useDataContext();
 
-  const uploadFiles = async (assets: any[]) => {
+  const uploadFiles = async (assets: any[], folderId?: string | null) => {
     dispatch({ type: ACTIONS.UPLOADING, payload: true });
     setIsUploading(true);
 
     const preparedAssets = await Promise.all(assets.map(prepareAssetForUpload));
 
     const formData = new FormData();
+
+    // Backend (UploadRequest.FolderID, form:"folder_id") files the upload into
+    // this folder; without it the file lands at the root.
+    if (folderId) {
+      formData.append('folder_id', folderId);
+    }
 
     preparedAssets.forEach(asset => {
       const fileName =
